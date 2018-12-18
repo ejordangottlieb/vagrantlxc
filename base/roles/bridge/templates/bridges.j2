@@ -1,0 +1,4 @@
+auto {{ item }} 
+iface {{ item }} inet static
+address 0.0.0.0
+pre-up brctl addbr {{ item }}

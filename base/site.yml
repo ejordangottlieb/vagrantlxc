@@ -1,0 +1,41 @@
+---
+
+- name: Set up users
+  hosts: localhost
+  roles:
+    - common
+  become: yes
+  tags: make_users
+
+- name: Set up bridges
+  hosts: localhost
+  roles:
+    - bridge
+  become: yes
+  tags: 
+    - makebridges
+
+- name: Set up skeleton lxc environment
+  hosts: localhost
+  roles:
+    - lxcunpriv
+  become: yes
+  tags:
+    - lxcunpriv
+
+- name: Set up containers for each user
+  hosts: localhost
+  roles:
+    - lxcipv6
+  become: yes
+  tags:
+    - makecontainers
+
+- name: Upload code to user directory
+  hosts: localhost
+  roles:
+    - ipv6code
+  become: yes
+  tags:
+    - makecode
+

@@ -1,0 +1,78 @@
+---
+# tasks file for roles/lxcunpriv
+
+- name: Initialize subuid dict
+  set_fact:
+    subuid_dict: {}
+
+- name: Initialize subgid dict
+  set_fact:
+    subgid_dict: {}
+
+- name: Initialize subuidrange dict
+  set_fact:
+    subuidrange_dict: {}
+
+- name: Initialize subgidrange dict
+  set_fact:
+    subgidrange_dict: {}
+
+- name: Create lxc-usernet file based on user metadata
+  template: 
+    src=lxc-usernet.j2 
+    dest=/etc/lxc/lxc-usernet
+    owner=root
+    group=root 
+    mode=0644
+
+- name: Extract subuid from subuid and register subuid file so it can be parsed
+  command: bash -c "grep {{ item.username }}':' /etc/subuid | cut -d ':' -f 2"
+  with_items: "{{ users }}"
+  register: subuid
+
+
+- name: Populate subuid_dict
+  set_fact:
+    subuid_dict: "{{ subuid_dict|combine({ item['item']['username']: item['stdout'] }) }}"
+  with_items: "{{ subuid.results }}"
+
+- name: Extract range from subuid and register subuid file so it can be parsed
+  command: bash -c "grep {{ item.username }}':' /etc/subuid | cut -d ':' -f 3"
+  with_items: "{{ users }}"
+  register: subuidrange
+
+
+- name: Populate subuidrange_dict
+  set_fact:
+    subuidrange_dict: "{{ subuidrange_dict|combine({ item['item']['username']: item['stdout'] }) }}"
+  with_items: "{{ subuidrange.results }}"
+
+- name: Extract subgid from subgid and register subgid file so it can be parsed
+  command: bash -c "grep {{ item.username }}':' /etc/subgid | cut -d ':' -f 2"
+  with_items: "{{ users }}"
+  register: subgid
+
+- name: Populate subgid_dict
+  set_fact:
+    subgid_dict: "{{ subgid_dict|combine({ item['item']['username']: item['stdout'] }) }}"
+  with_items: "{{ subgid.results }}"
+
+- name: Extract range from subgid and register subgid file so it can be parsed
+  command: bash -c "grep {{ item.username }}':' /etc/subgid | cut -d ':' -f 3"
+  with_items: "{{ users }}"
+  register: subgidrange
+
+
+- name: Populate subuidrange_dict
+  set_fact:
+    subgidrange_dict: "{{ subgidrange_dict|combine({ item['item']['username']: item['stdout'] }) }}"
+  with_items: "{{ subgidrange.results }}"
+
+- name: Create a LXC network configuration file for each user
+  template:
+    src=lxc-net-template.j2
+    dest="/home/{{ item.username }}/{{ item.username }}Net.cfg"
+    owner="{{ item.username }}"
+    group="{{ item.username }}"
+    mode=0644
+  with_items: "{{ users }}"

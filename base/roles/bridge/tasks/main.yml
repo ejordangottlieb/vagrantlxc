@@ -1,0 +1,51 @@
+---
+# tasks file for bridge
+
+- name: Set bridge dict fact
+  set_fact: 
+    bridge_list: []
+
+- name: Set bridge list fact
+  set_fact:
+    bridge_dict: {}
+
+- name: Debug bridge names
+  debug:
+    msg: "{{ item.0['assigned_bridges'] }}"
+  loop: "{{ users|subelements('assigned_bridges') }}"
+  register: mybridges
+
+
+- name: mybridges
+  set_fact: 
+    bridge_list: "{{ bridge_list + item.msg }}"
+  with_items:
+    - "{{ mybridges.results }}"
+
+- name: print it
+  debug:
+    msg: "{{ bridge_list }}"
+
+- name: clean up and elimiate dups
+  set_fact:
+    bridge_dict: "{{ bridge_dict|combine( { item: 'true' }) }}"
+  with_items: "{{ bridge_list }}"
+
+- name: print the bridge_dict
+  debug:
+    msg: "{{ item.key }}"
+  with_dict: "{{ bridge_dict }}"
+
+- name: Create bridge files in /etc/network/interfaces.d
+  template:
+    src=bridges.j2
+    dest="/etc/network/interfaces.d/{{ item }}.cfg"
+    owner=root
+    group=root
+    mode=0644
+  with_items: "{{ bridge_list }}"
+
+- name: Re-start networking
+  service:
+    name: networking
+    state: restarted

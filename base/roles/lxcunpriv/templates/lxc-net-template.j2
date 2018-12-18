@@ -1,0 +1,15 @@
+lxc.id_map = u 0 {{ subuid_dict[item.username] }} {{ subuidrange_dict[item.username] }}
+lxc.id_map = g 0 {{ subgid_dict[item.username] }} {{ subgidrange_dict[item.username] }}
+lxc.network.type = veth
+lxc.network.link = lxcbr0
+lxc.network.name = eth0
+lxc.network.flags = up
+
+
+{% for n in range(item.assigned_bridges| length) %}
+lxc.network.type = veth
+lxc.network.link = {{ item.assigned_bridges[n] }}
+lxc.network.name = eth{{ (n + 1)|string }}
+lxc.network.flags = up
+
+{% endfor %}

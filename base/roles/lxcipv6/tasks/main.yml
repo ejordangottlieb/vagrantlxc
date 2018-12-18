@@ -1,0 +1,128 @@
+---
+# tasks file for lxcipv6
+
+- name: Create router container
+  shell: su -c "lxc-create -n {{ item.username }}rtr -t download -f /home/{{ item.username }}/{{ item.username }}Net.cfg -- --dist ubuntu --release xenial --arch {{ containarch }}" "{{ item.username }}"
+  tags:
+    - createrouter
+  with_items: "{{ users }}"
+
+
+- name: Start router container
+  shell: su -c "lxc-start -n {{ item.username }}rtr" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - startrouter
+
+- name: Create second router container
+  shell: su -c "lxc-create -n {{ item.username }}rtr2 -t download -f /home/{{ item.username }}/{{ item.username }}Net.cfg -- --dist ubuntu --release xenial --arch {{ containarch }}" "{{ item.username }}"
+  tags:
+    - createrouter
+  with_items: "{{ users }}"
+#
+
+- name: Start second router container
+  shell: su -c "lxc-start -n {{ item.username }}rtr2" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - startrouter
+#
+- name: Create client container
+  shell: su -c "lxc-create -n {{ item.username }}client -t download -f /home/{{ item.username }}/{{ item.username }}Net.cfg -- --dist ubuntu --release xenial --arch {{ containarch }}" "{{ item.username }}"
+  tags:
+    - createclient
+  with_items: "{{ users }}"
+
+- name: Start client container
+  shell: su -c "lxc-start -n {{ item.username }}client" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - startclient
+
+- name: Create shell script on rtr container that installs packages
+  shell: su -c "lxc-attach -n {{ item.username }}rtr -- bash -c \"echo -e '\"#\"!/bin/bash\nexport PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\nDEBIAN_FRONTEND=noninteractive apt-get -y update\nDEBIAN_FRONTEND=noninteractive apt-get -y install python-minimal python-scapy tcpdump tshark openssh-server radvd tree' | tee /usr/local/bin/install_packages.sh\"" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - shellscript
+
+- name: Set permisions on shell script on rtr
+  shell: su -c "lxc-attach -n {{ item.username }}rtr -- bash -c \"chmod 755 /usr/local/bin/install_packages.sh\"" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - shellscript
+
+- name: Install packages on rtr container
+  shell: su -c "sleep 1; jgottlieb=test123 lxc-attach -n {{ item.username }}rtr -- bash -c '/usr/local/bin/install_packages.sh'" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - routerpackages
+
+- name: Create shell script on rtr2 container that installs packages
+  shell: su -c "lxc-attach -n {{ item.username }}rtr2 -- bash -c \"echo -e '\"#\"!/bin/bash\nexport PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\nDEBIAN_FRONTEND=noninteractive apt-get -y update\nDEBIAN_FRONTEND=noninteractive apt-get -y install python-minimal python-scapy tcpdump tshark openssh-server radvd tree' | tee /usr/local/bin/install_packages.sh\"" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - shellscript
+
+- name: Set permisions on shell script on rtr2
+  shell: su -c "lxc-attach -n {{ item.username }}rtr2 -- bash -c \"chmod 755 /usr/local/bin/install_packages.sh\"" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - shellscript
+
+- name: Install packages on rtr2 container
+  shell: su -c "sleep 1; jgottlieb=test123 lxc-attach -n {{ item.username }}rtr -- bash -c '/usr/local/bin/install_packages.sh'" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - routerpackages
+
+- name: Create shell script on client container that installs packages
+  shell: su -c "lxc-attach -n {{ item.username }}client -- bash -c \"echo -e '\"#\"!/bin/bash\nexport PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\nDEBIAN_FRONTEND=noninteractive apt-get -y update\nDEBIAN_FRONTEND=noninteractive apt-get -y install python-minimal python-scapy tcpdump tshark openssh-server radvd tree' | tee /usr/local/bin/install_packages.sh\"" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - shellscript
+
+- name: Set permisions on shell script on client
+  shell: su -c "lxc-attach -n {{ item.username }}client -- bash -c \"chmod 755 /usr/local/bin/install_packages.sh\"" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - shellscript
+
+- name: Install packages on client container
+  shell: su -c "sleep 1; jgottlieb=test123 lxc-attach -n {{ item.username }}client -- bash -c '/usr/local/bin/install_packages.sh'" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - clientpackages
+
+# The following is not intended to be secure.  Access to containers is limited to 
+# local host.  User can reset password during training session.
+- name: Set the password for ubuntu user on router
+  shell: su -c "lxc-attach -n {{ item.username }}rtr -- bash -c \"echo -e 'ubuntu\nubuntu\n' | passwd ubuntu\"" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - setpass
+
+# The following is not intended to be secure.  Access to containers is limited to
+# local host.  User can reset password during training session.
+- name: Set the password for ubuntu user on second router
+  shell: su -c "lxc-attach -n {{ item.username }}rtr2 -- bash -c \"echo -e 'ubuntu\nubuntu\n' | passwd ubuntu\"" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - setpass
+
+- name: Set the password for ubuntu user on client
+  shell: su -c "lxc-attach -n {{ item.username }}client -- bash -c \"echo -e 'ubuntu\nubuntu\n' | passwd ubuntu\"" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - setpass
+
+- name: Set up a skeleton radvd.conf.template file on router
+  shell: su -c "lxc-attach -n {{ item.username }}rtr -- bash -c \"echo -e 'interface eth1\n{\n    AdvSendAdvert on;\n    MinRtrAdvInterval 3;\n    MaxRtrAdvInterval 10;\n    AdvDefaultPreference medium;\n    AdvManagedFlag off;\n    AdvOtherConfigFlag off;\n    \"#\" AdvReachableTime milliseconds;\n    prefix 2001:db8:254::/64 {\n        AdvOnLink on;\n        AdvAutonomous on;\n    };\n};' | tee /etc/radvd.conf.template\"" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - radvdconf
+
+- name: Set up a skeleton radvd.conf.template file on router2
+  shell: su -c "lxc-attach -n {{ item.username }}rtr2 -- bash -c \"echo -e 'interface eth1\n{\n    AdvSendAdvert on;\n    MinRtrAdvInterval 3;\n    MaxRtrAdvInterval 10;\n    AdvDefaultPreference low;\n    AdvManagedFlag off;\n    AdvOtherConfigFlag off;\n    \"#\" AdvReachableTime milliseconds;\n    prefix 2001:db8:254::/64 {\n        AdvOnLink on;\n        AdvAutonomous on;\n    };\n};' | tee /etc/radvd.conf.template\"" "{{ item.username }}"
+  with_items: "{{ users }}"
+  tags:
+    - radvdconf

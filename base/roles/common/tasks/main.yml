@@ -1,0 +1,28 @@
+---
+# tasks file for roles/common
+
+- name: Initialize empty list
+  set_fact:
+    my_list: []
+
+- name: Populate my list
+  shell: mkpasswd "{{ item.password }}" --method=sha-512
+  with_items: "{{ users }}"
+  register: report_password
+
+- name: Put in clean data structure
+  set_fact:
+    theresult: "{{ report_password.results }}"
+
+- name: Iterate through the list
+  debug:
+    msg: "{{ item['stdout'] }} {{ item['item']['username'] }}"
+  with_items: "{{ theresult }}"
+
+- name: Add the user 
+  user:
+    name: "{{ item['item']['username'] }}"
+    comment: "Auto added username {{ item['item']['username'] }}"
+    password: "{{ item['stdout'] }}"
+    shell: "{{ global['shell'] }}"
+  with_items: "{{ theresult }}"

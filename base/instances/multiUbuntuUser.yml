@@ -1,0 +1,27 @@
+---
+containarch: amd64
+global:
+  shell: /bin/bash
+  bridges: 3
+users:
+  - username: userone
+    password: password4321
+    bridges: "{{ global['bridges'] }}"
+    assigned_bridges:
+      - lxcbr1
+  - username: usertwo
+    password: password4322
+    bridges: "{{ global['bridges'] }}"
+    assigned_bridges:
+      - lxcbr2
+  - username: userthree
+    password: password4323
+    bridges: "{{ global['bridges'] }}"
+    assigned_bridges:
+      - lxcbr3
+      - lxcbr4
+  - username: userfour
+    password: password4324
+    bridges: "{{ global['bridges'] }}"
+    assigned_bridges:
+      - lxcbr5

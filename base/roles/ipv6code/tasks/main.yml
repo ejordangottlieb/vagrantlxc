@@ -1,0 +1,30 @@
+---
+# tasks file for ipv6code
+
+- name: Populate ~/code with eui64.py
+  copy:
+    src=eui64.py
+    dest="/home/{{ item.username }}/code/"
+    owner="{{ item.username }}"
+    group="{{ item.username }}"
+    mode=0755
+  with_items: "{{ users }}"
+
+- name: Populate ~/code with solnode.py
+  copy:
+    src=solnode.py
+    dest="/home/{{ item.username }}/code/"
+    owner="{{ item.username }}"
+    group="{{ item.username }}"
+    mode=0755
+  with_items: "{{ users }}"
+
+- name: Populate ~/code with six2mac.py
+  copy:
+    src=six2mac.py
+    dest="/home/{{ item.username }}/code/"
+    owner="{{ item.username }}"
+    group="{{ item.username }}"
+    mode=0755
+  with_items: "{{ users }}"
+

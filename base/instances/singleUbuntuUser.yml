@@ -1,0 +1,11 @@
+---
+containarch: amd64
+global:
+  shell: /bin/bash
+  bridges: 3
+users:
+  - username: exampleuser
+    password: password321
+    bridges: "{{ global['bridges'] }}"
+    assigned_bridges:
+      - lxcbr1

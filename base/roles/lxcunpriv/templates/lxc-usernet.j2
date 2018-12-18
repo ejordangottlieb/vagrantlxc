@@ -1,0 +1,6 @@
+{% for n in range(users| length) %}
+{{ users[n]["username"] }} veth lxcbr0 {{ users[n]["bridges"] }}
+{% for bridge in users[n]['assigned_bridges'] %}
+{{ users[n]["username"] }} veth {{ bridge }} {{ users[n]["bridges"] }}
+{% endfor %}
+{% endfor %}
