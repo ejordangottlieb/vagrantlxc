@@ -23,7 +23,6 @@ Vagrant.configure("2") do |config|
   config.ssh.insert_key = true
   config.ssh.forward_agent = true
 #  config.ssh.private_key_path = "~/.vagrant.d/insecure_private_key"
-  config.ssh.username = "ubuntu"
   config.vm.provision "file", source: "./base", destination: "$HOME/base"
   config.vm.provision "shell", inline: $script 
   config.vm.network "private_network",
