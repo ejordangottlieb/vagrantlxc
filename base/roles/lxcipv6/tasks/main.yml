@@ -70,7 +70,7 @@
     - shellscript
 
 - name: Install packages on rtr2 container
-  shell: su -c "sleep 1; jgottlieb=test123 lxc-attach -n {{ item.username }}rtr -- bash -c '/usr/local/bin/install_packages.sh'" "{{ item.username }}"
+  shell: su -c "sleep 1; jgottlieb=test123 lxc-attach -n {{ item.username }}rtr2 -- bash -c '/usr/local/bin/install_packages.sh'" "{{ item.username }}"
   with_items: "{{ users }}"
   tags:
     - routerpackages
