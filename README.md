@@ -6,6 +6,9 @@ Vagrant Non-Privileged Ubuntu 16.04 LXC Environment
 2. Run "vagrant up" in this directory
 3. Enter newly created box by "vagrant ssh" from within this directory
 4. From "base" directory run "ansible-playbook -e @./instances/singleUbuntuUser.yml site.yml"
+5. Log into environment using assigned username/password through the base vagrant box
+6. Obtain list of defined lxc hosts by running "lxc-ls -f"
+7. Use lxc-attach -n LXCHOSTNAME to connect to each container in exercise
 
 Instance definition files are user defined and can be edited.  Depending on environment end-user can use the provided templates to customize as necessary.
 
