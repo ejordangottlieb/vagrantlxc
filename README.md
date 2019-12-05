@@ -16,8 +16,8 @@ Field Definitions
 containnarch: The hardware environment lxc is running on (as supported by lxc)
 ## global variables
 * shell: default shell for defined users
-* bridges: The number of bridges a non-priv user may define
+* bridges: The number of bridges a non-privileged user may define
 ## users
-The list of users to create a non-priv environnment for.  Each account allows for simple username based authentication.
+The list of users to create a non-privileged  environnment for.  Each account allows for simple username based authentication.
 ### assigned_bridges
 A list of bridges to assign to a particular user (lxcbr0 is common to all by default).  These bridges are intented to be unique per user.
