@@ -15,8 +15,8 @@ Instance definition files are user defined and can be edited.  Depending on envi
 Field Definitions
 containnarch: The hardware environment lxc is running on (as supported by lxc)
 ## global variables
-shell: default shell for defined users
-bridges: The number of bridges a non-priv user may define
+-shell: default shell for defined users
+-bridges: The number of bridges a non-priv user may define
 ## users
 The list of users to create a non-priv environnment for.  Each account allows for simple username based authentication.
 ### assigned_bridges
