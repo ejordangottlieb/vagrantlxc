@@ -2,7 +2,7 @@
 containarch: armhf
 global:
   shell: /bin/bash
-  bridges: 3
+  bridges: 10
 users:
   - username: userone
     password: password4321
