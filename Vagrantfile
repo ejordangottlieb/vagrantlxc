@@ -9,9 +9,9 @@ $HOME = "/home/ubuntu"
 $script = <<-SCRIPT
 echo I am provisioning the system...
 apt-get -y update
-apt-get -y install whois python-pip git lxc tree
-pip install --upgrade pip
-python -m pip install ansible
+apt-get -y install whois python3-pip git lxc tree
+python3 -m pip install --upgrade pip
+python3 -m pip install ansible
 echo I am done provisioning the system...
 echo I am rebooting the system
 reboot
